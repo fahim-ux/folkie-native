@@ -1,23 +1,26 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform , StatusBar} from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+// import { blue } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 
 export default function HomeScreen() {
   return (
+    <>
+    <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF"/>
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#ECDFCC', dark: '#1D3D47' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/fahim.jpg')}
           style={styles.reactLogo}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title" style={styles.message}>Welcome!</ThemedText>
+        {/* <HelloWave /> */}
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
@@ -37,7 +40,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        <ThemedText type="subtitle">Step 3: Get a fresh </ThemedText>
         <ThemedText>
           When you're ready, run{' '}
           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
@@ -47,6 +50,8 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
+    </>
+    
   );
 }
 
@@ -55,16 +60,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    backgroundColor:'blue',
+    width:'auto',
   },
   stepContainer: {
     gap: 8,
     marginBottom: 8,
+    backgroundColor:'#ECDFCC',
   },
   reactLogo: {
-    height: 178,
+    height: 200,
     width: 290,
-    bottom: 0,
-    left: 0,
+    bottom: 10,
+    left: 50,
     position: 'absolute',
   },
+  message:{
+    color:'white',
+    // backgroundColor:'blue'
+  }
 });
