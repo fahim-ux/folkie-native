@@ -2,38 +2,50 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import * as Font from 'expo-font'
+import { useEffect ,useState} from 'react';
 import 'react-native-reanimated';
-
+import Navbar from './Navbar';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
+import LoadingScreen from '@/components/LoadingScreen';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [fontsLoaded,setFontsLoaded] = useState(false);
+    
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    const loadFonts = async () =>{
+        await Font.loadAsync({
+            'Roboto-Regular': require('@/assets/fonts/Roboto-Mono/RobotoMono-Regular.ttf'),
+            'Roboto-Bold': require('@/assets/fonts/Roboto-Mono/RobotoMono-Bold.ttf'),
+            'Roboto-Medium': require('@/assets/fonts/Roboto-Mono/RobotoMono-Medium.ttf'),
+            'Roboto-Light': require('@/assets/fonts/Roboto-Mono/RobotoMono-Light.ttf')
+        });
+        setTimeout(()=>{
+            setFontsLoaded(true);
+            SplashScreen.hideAsync();
+        },5000);
+    };
+
+    useEffect(()=>{
+        SplashScreen.preventAutoHideAsync();
+        loadFonts();
+    },[]);
+
+    if (!fontsLoaded) {
+        return <LoadingScreen/>;
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* <Navbar /> */}
+      <Navbar />
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }}/>
-        <Stack.Screen name="+not-found" />
-        <Stack.Screen name="details" />
+        {/* <Stack.Screen name="index" options={{ headerShown: false }}/> */}
+        <Stack.Screen name="+not-found" options={{ headerShown: false }}/>
+        <Stack.Screen name="details" options={{ headerShown: false }}/>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>

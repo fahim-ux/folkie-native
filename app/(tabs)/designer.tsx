@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     paddingTop:5
   },
   sub:{
-    backgroundColor: '#C1D8C3',
+    backgroundColor: '#508C9B',
     width: '99%',
     height: 300,
     marginBottom: 4,

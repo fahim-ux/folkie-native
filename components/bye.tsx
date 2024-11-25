@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
 
-export default function DetailsScreen() {
+export default function Bye() {
     return (
         <>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <View style={styles.container}>
-                <Text>Set Screen (Details Screen)</Text>
+                <Text>Bye.....</Text>
             </View>
         </>
     );

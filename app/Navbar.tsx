@@ -5,46 +5,27 @@ import { useState,useRef , useEffect} from "react";
 import * as Font from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen';
 import LoadingScreen from "@/components/LoadingScreen";
+import { useNavigation,NavigationProp } from "@react-navigation/native";
+import { Link } from "expo-router";
 
-interface Item{
-    id:string;
-    title:string;
-}
 
-const items:Item[] = [
-    { id: '1', title: 'Home' },
-    { id: '2', title: 'About Us' },
-    { id: '3', title: 'Dev-info' },
-    { id: '4', title: 'Careers' },
+interface Item {
+    id: string;
+    title: string;
+    no:number;
+  }
+const items: Item[] = [
+    { id: '1', title: 'Home' , no:1},
+    { id: '2', title: 'About Us', no:1},
+    { id: '3', title: 'Dev-info', no:1},
+    { id: '4', title: 'Careers' , no:1},
   ];
 
 export default function Navbar(){
 
     const [sidebarVisible,setSidebarVisible] = useState(false);
     const sidebarLeft = useRef(new Animated.Value(-250)).current;
-    const [fontsLoaded,setFontsLoaded] = useState(false);
-
-    const loadFonts = async () =>{
-        await Font.loadAsync({
-            'Roboto-Regular': require('@/assets/fonts/Roboto-Mono/RobotoMono-Regular.ttf'),
-            'Roboto-Bold': require('@/assets/fonts/Roboto-Mono/RobotoMono-Bold.ttf'),
-            'Roboto-Medium': require('@/assets/fonts/Roboto-Mono/RobotoMono-Medium.ttf'),
-            'Roboto-Light': require('@/assets/fonts/Roboto-Mono/RobotoMono-Light.ttf')
-        });
-        setTimeout(()=>{
-            setFontsLoaded(true);
-            SplashScreen.hideAsync();
-        },5000);
-    };
-
-    useEffect(()=>{
-        SplashScreen.preventAutoHideAsync();
-        loadFonts();
-    },[]);
-
-    if (!fontsLoaded) {
-        return <LoadingScreen/>;
-    }
+    
 
     const toggleSidebar = () =>{
         Animated.timing(sidebarLeft,{
@@ -54,10 +35,15 @@ export default function Navbar(){
         }).start();
         setSidebarVisible(!sidebarVisible);
     }
-
+    const src = 'details';
+    const links = ['index', 'details', 'details', 'details'];
     const renderItem:ListRenderItem<Item> = ({ item}) => (
-        <TouchableOpacity style={styles.item} onPress={() => alert(`Clicked on ${item.title}`)}>
-          <Text style={styles.itemText}>{item.title}</Text>
+        <TouchableOpacity style={styles.item}>
+          {/* <Text style={styles.itemText}>{item.title}</Text> */}
+          <Link href={{
+            pathname: `/`,
+            params: { id: 'bacon' }
+    }} style={styles.itemText}>{item.title}</Link>
         </TouchableOpacity>
       );
     return (
@@ -96,6 +82,7 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         borderBottomWidth:0.5,
         borderBottomColor:'#D3D3D3',
+        // position:'fixed',
     },
     container:{
         flex:1,
@@ -141,12 +128,14 @@ const styles = StyleSheet.create({
         paddingRight:0,
         paddingLeft:0,
         position:'absolute',
+        // position:'fixed',
         top:60,
         left:-250,
         // right:0,
         // bottom:0,
         borderWidth:1,
-        borderColor:'blue'
+        borderColor:'blue',
+        zIndex:1000
 
     }
 
