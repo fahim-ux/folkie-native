@@ -1,13 +1,9 @@
 import React from "react";
-import { View ,Text, StyleSheet,StatusBar, TouchableOpacity,Image,FlatList, ListRenderItem,Animated} from "react-native";
+import { View , StyleSheet,StatusBar, TouchableOpacity,Image,FlatList, ListRenderItem,Animated} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import { useState,useRef , useEffect} from "react";
-import * as Font from 'expo-font'
-import * as SplashScreen from 'expo-splash-screen';
-import LoadingScreen from "@/components/LoadingScreen";
-import { useNavigation,NavigationProp } from "@react-navigation/native";
+import { useState,useRef } from "react";
 import { Link } from "expo-router";
-
+import { PanResponder } from "react-native";
 
 interface Item {
     id: string;
@@ -24,7 +20,8 @@ const items: Item[] = [
 export default function Navbar(){
 
     const [sidebarVisible,setSidebarVisible] = useState(false);
-    const sidebarLeft = useRef(new Animated.Value(-250)).current;
+    const [sidebarLeft,setSidebarLeft] = useState(new Animated.Value(-250));
+    // const [sidebarLeft,setSidebarLeft] = useState(new Animated.Value(-240));
     
 
     const toggleSidebar = () =>{
@@ -35,8 +32,61 @@ export default function Navbar(){
         }).start();
         setSidebarVisible(!sidebarVisible);
     }
-    const src = 'details';
-    const links = ['index', 'details', 'details', 'details'];
+    
+    // const panResponder = useRef(PanResponder.create({
+    //     onMoveShouldSetPanResponder: (evt,gestureState) =>{
+    //         console.log("gestureState.dx-1",gestureState.dx);
+    //         return Math.abs(gestureState.dx) >0;
+    //     },
+    //     onPanResponderMove: (evt,gestureState) =>{
+    //         if(gestureState.dx >0)
+    //         {
+    //             console.log("User swiping right");
+    //             sidebarLeft.setValue(gestureState.dx);
+    //         }
+    //         else if (gestureState.dx <0 )
+    //         {
+    //             console.log("User swiping left");
+    //             sidebarLeft.setValue(gestureState.dx);
+    //         }
+    //         else
+    //         {
+    //             console.log("Confuse state");
+    //         }
+    //         // if(gestureState.dx > 0) {
+    //         //     console.log("User swiping right");
+    //         // }
+    //         // else if (gestureState.dx < 0) {
+    //         //     console.log("User swiping left");
+    //     },
+    //     onPanResponderRelease: (evt,gestureState) =>{
+    //         if(gestureState.dx >100){
+    //             Animated.timing(sidebarLeft,{
+    //                 toValue:0,
+    //                 duration:600,
+    //                 useNativeDriver:false
+    //             }).start();
+    //             setSidebarVisible(true);
+    //         }
+    //         else if (gestureState.dx < -10) {
+    //             // Swiped left enough to close
+    //             Animated.timing(sidebarLeft, {
+    //               toValue: -240,
+    //               duration: 300,
+    //               useNativeDriver: false,
+    //             }).start();
+    //             setSidebarVisible(false);
+    //           } else {
+    //             // Not enough swipe, reset to current state
+    //             Animated.timing(sidebarLeft, {
+    //               toValue: sidebarVisible ? 0 : -250,
+    //               duration: 300,
+    //               useNativeDriver: false,
+    //             }).start();
+    //           }
+    //     }
+    // })).current;
+
     const renderItem:ListRenderItem<Item> = ({ item}) => (
         <TouchableOpacity style={styles.item}>
           {/* <Text style={styles.itemText}>{item.title}</Text> */}
