@@ -1,59 +1,98 @@
-import {  Image,View,ScrollView ,StyleSheet} from 'react-native';
+import {  Image,View,ScrollView ,StyleSheet,ImageBackground,StatusBar,Text} from 'react-native';
 
 export default function HomeScreen() {
   return (
     <>
-    <ScrollView >
-      <View style={styles.Container}>
-      <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-2.png')} style={styles.image}/>
-          </View>
-          <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-3.png')} style={styles.image}/>
-          </View>
-          <View style={styles.sub}>
-          <Image source={require('@/assets/images/folkie-4.png')} style={styles.image2}/>
-          </View>
+    <StatusBar barStyle="light-content" backgroundColor="#5e5d5d"/>
+    {/* <ScrollView > */}
+      <View style={styles.container}>
+        <ImageBackground source={require('@/assets/images/login.png')} style={styles.background}>
+        <View style={styles.logo}>
+          <Image source={require('@/assets/images/folkie-5.png')} style={styles.image}/>
+        </View>
+        <View></View>
+        <View style={styles.form}>
+          <Image source={require('@/assets/images/login-2.png')} style={styles.box} />
+        <View>
+          <Text style={styles.word}>SignUp!</Text>
+        </View>
+        </View>
+        </ImageBackground>
       </View>
-    </ScrollView>
+    {/* </ScrollView> */}
     </>
     
   );
 }
 
 const styles = StyleSheet.create({
-  Container: {
-    backgroundColor: '#FBFBFB',
-    // height: 1000,
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    padding:3,
-    borderColor: '#F4F6FF',
-    borderWidth:2,
-    paddingTop:5
+  background:{
+    // flex: 1,
+    // resizeMode: 'cover',
+    width: 385,
+    height: 780,
+    display: 'flex',
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 1,
   },
-  sub:{
-    backgroundColor: '#F1EFEF',
-    width: '100%',
-    height: 300,
-    marginBottom: 4,
-    borderRadius:2,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
+  container:{
+    display: 'flex',
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image:{
-    width: 360,
-    height: 280,
+    width: 80,
+    height: 80,
     borderRadius:2,
     aspectRatio:1.3
   },
-  image2:{
-    width: 360,
-    height: 280,
-    borderRadius:2,
-    // aspectRatio:1
+  logo:{
+    width: 80,
+    height: 60,
+    display: 'flex',
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 10,
+    left: 157,
   },
+  form:{
+    width: 200,
+    height: 500,
+    backgroundColor: '#FFFFFF',
+    // borderRadius: 10,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 170,
+    left: 0,
+    borderTopRightRadius: 50,
+    borderBottomRightRadius: 50,
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 }, // Shadow to the right and bottom
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 10,
+    overflow: 'hidden',
+  },
+  box:{
+    width: 200,
+    height: 200,
+    position: 'absolute',
+    top: 400,
+  },
+  word:{
+    fontSize: 20,
+    color: '#FFFFFF',
+    position: 'absolute',
+    top: 0,
+    left: 100,
+  }
+  
   
 });
