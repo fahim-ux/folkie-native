@@ -1,4 +1,4 @@
-import {  View,ScrollView ,StyleSheet,Image} from 'react-native';
+import {  Image,View,ScrollView ,StyleSheet} from 'react-native';
 import React from 'react';
 
 export default function HomeScreen() {
@@ -6,11 +6,11 @@ export default function HomeScreen() {
     <>
     <ScrollView >
       <View style={styles.Container}>
-      <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-2.png')} style={styles.image}/>
-          </View>
           <View style={styles.sub}>
             <Image source={require('@/assets/images/folkie-3.png')} style={styles.image}/>
+          </View>
+          <View style={styles.sub}>
+            <Image source={require('@/assets/images/folkie-2.png')} style={styles.image}/>
           </View>
           <View style={styles.sub}>
           <Image source={require('@/assets/images/folkie-4.png')} style={styles.image2}/>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     paddingTop:5
   },
   sub:{
-    backgroundColor: '#FBF9F1',
+    backgroundColor: '#F4F6FF',
     width: '100%',
     height: 300,
     marginBottom: 4,
@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     display:'flex',
     justifyContent:'center',
     alignItems:'center',
+    // padding:3,
   },
   image:{
     width: 360,

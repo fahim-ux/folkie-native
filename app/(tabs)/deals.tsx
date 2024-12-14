@@ -1,3 +1,4 @@
+import React from 'react';
 import {  Image,View,ScrollView ,StyleSheet,ImageBackground,StatusBar,Text} from 'react-native';
 
 export default function HomeScreen() {

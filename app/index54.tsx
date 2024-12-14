@@ -1,6 +1,7 @@
 import { Link } from 'expo-router';
 import { View, Text, StyleSheet, StatusBar,Button } from 'react-native';
 import { useNavigation } from 'expo-router';
+import React from 'react';
 
 export default function DetailsScreen() {
     const navigation = useNavigation();
@@ -14,11 +15,11 @@ export default function DetailsScreen() {
                     title="Go to Tabs"
                     onPress={() => navigation.navigate('(tabs)/index')}
                 /> */}
-                 <Link href={{
+                 {/* <Link href={{
                 pathname: '/(tabs)',
                 params: { id: 'bacon' }
                
-    }}  style={styles.link}>Tabs</Link>
+    }}  style={styles.link}>Tabs</Link> */}
             </View>
         </>
     );

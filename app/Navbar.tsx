@@ -90,10 +90,10 @@ export default function Navbar(){
     const renderItem:ListRenderItem<Item> = ({ item}) => (
         <TouchableOpacity style={styles.item}>
           {/* <Text style={styles.itemText}>{item.title}</Text> */}
-          <Link href={{
+          {/* <Link href={{
             pathname: `/`,
             params: { id: 'bacon' }
-    }} style={styles.itemText}>{item.title}</Link>
+    }} style={styles.itemText}>{item.title}</Link> */}
         </TouchableOpacity>
       );
     return (

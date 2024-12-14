@@ -1,60 +1,98 @@
-import {  Image,View,ScrollView ,StyleSheet} from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Button, Platform, Alert, StyleSheet } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
-export default function HomeScreen() {
+// Set notification handler (foreground behavior)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+export default function App() {
+  // Effect to register for notifications on mount
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+
+    // Listener for incoming notifications
+    const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
+      console.log('Notification received:', notification);
+    });
+
+    // Listener for user interaction with a notification
+    const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log('Notification response received:', response);
+    });
+
+    return () => {
+      notificationListener.remove();
+      responseListener.remove();
+    };
+  }, []);
+
+  // Function to register for push notifications
+  const registerForPushNotificationsAsync = async (): Promise<void> => {
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== 'granted') {
+        Alert.alert('Permission required', 'Failed to get push token for push notifications!');
+        return;
+      }
+
+      const token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log('Push token:', token);
+    } else {
+      Alert.alert('Error', 'Push notifications require a physical device.');
+    }
+
+    // Configure Android-specific notification channel
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  };
+
+  // Schedule a local notification
+  const scheduleNotification = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Hello! 📬',
+        body: 'This is a test notification.',
+        data: { extraData: 'Some extra data here!' },
+      },
+      trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 2,
+        repeats:false }, // Notification will trigger in 2 seconds
+    });
+  };
+
   return (
-    <>
-    <ScrollView >
-      <View style={styles.Container}>
-          <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-3.png')} style={styles.image}/>
-          </View>
-          <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-2.png')} style={styles.image}/>
-          </View>
-          <View style={styles.sub}>
-          <Image source={require('@/assets/images/folkie-4.png')} style={styles.image2}/>
-          </View>
-      </View>
-    </ScrollView>
-    </>
-    
+    <View style={styles.container}>
+      <Button title="Send Notification" onPress={scheduleNotification} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  Container: {
-    backgroundColor: '#FBFBFB',
-    // height: 1000,
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    padding:3,
-    borderColor: '#F4F6FF',
-    borderWidth:2,
-    paddingTop:5
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  sub:{
-    backgroundColor: '#F4F6FF',
-    width: '100%',
-    height: 300,
-    marginBottom: 4,
-    borderRadius:2,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-    // padding:3,
-  },
-  image:{
-    width: 360,
-    height: 280,
-    borderRadius:2,
-    aspectRatio:1.3
-  },
-  image2:{
-    width: 360,
-    height: 280,
-    borderRadius:2,
-    // aspectRatio:1
-  },
-  
 });
