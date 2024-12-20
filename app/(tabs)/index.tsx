@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Button, Platform, Alert, StyleSheet } from 'react-native';
+import React, { useEffect,useState } from 'react';
+import { View, Button, Platform, Alert, StyleSheet,Text, TouchableOpacity,StatusBar } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
@@ -8,35 +8,77 @@ import { SchedulableTriggerInputTypes } from 'expo-notifications';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: true,
+    shouldPlaySound: false,
     shouldSetBadge: false,
   }),
 });
 
+type PushToken = string | null;
+
 export default function App() {
-  // Effect to register for notifications on mount
+  const [expoPushToken, setExpoPushToken] = useState<PushToken>(null);
+  let notificationListener: any;
+  let responseListener: any;
   useEffect(() => {
-    registerForPushNotificationsAsync();
+    console.log('Listing Channels....🚀🚀🚀');
+    listAllChannels();
+
+    const removeListeners = () => {
+      console.log('Cleaning up old notification listeners... 🔇');
+      if (notificationListener) notificationListener.remove();
+      if (responseListener) responseListener.remove();
+    };
+
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) {
+        setExpoPushToken(token);
+        console.log('Expo Push Token:', token);
+      }
+    });
 
     // Listener for incoming notifications
     const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
       console.log('Notification received:', notification);
     });
 
-    // Listener for user interaction with a notification
     const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log('Notification response received:', response);
+      console.log('User interacted with notification:', response);
     });
 
     return () => {
-      notificationListener.remove();
-      responseListener.remove();
+      if (notificationListener) {
+        Notifications.removeNotificationSubscription(notificationListener);
+      }
+      if (responseListener) {
+        Notifications.removeNotificationSubscription(responseListener);
+      }
+      console.log('Notification listeners cleaned up!');
     };
-  }, []);
 
-  // Function to register for push notifications
-  const registerForPushNotificationsAsync = async (): Promise<void> => {
-    if (Device.isDevice) {
+  },[]);
+  const scheduleNotificationOnExistingChannel = async () => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Hello from Existing Channel! Fahim ☠️😊',
+          body: 'This notification uses the existing channel.',
+        },
+        trigger: null, 
+      });
+      console.log('Notification scheduled on the existing channel.');
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  };
+  const registerForPushNotificationsAsync = async () => {
+    try {
+      // Check if the app is running on a physical device
+      if (!Device.isDevice) {
+        Alert.alert('Error', 'Push notifications are only supported on physical devices.');
+        return null;
+      }
+
+      // Request permission to send notifications
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
 
@@ -46,45 +88,39 @@ export default function App() {
       }
 
       if (finalStatus !== 'granted') {
-        Alert.alert('Permission required', 'Failed to get push token for push notifications!');
-        return;
+        Alert.alert('Permission required', 'Push notifications permission is not granted.');
+        return null;
       }
 
+      // Fetch the Expo push token
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log('Push token:', token);
-    } else {
-      Alert.alert('Error', 'Push notifications require a physical device.');
+      return token;
+    } catch (error) {
+      console.error('Error registering for push notifications:', error);
+      return null;
     }
-
-    // Configure Android-specific notification channel
+  };
+  const listAllChannels = async () => {
     if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
+      const channels = await Notifications.getNotificationChannelsAsync();
+      console.log('Notification Channels:', channels);
+  
+      channels.forEach((channel) => {
+        console.log(`Channel ID: ${channel.id}, Name: ${channel.name}`);
       });
+    } else {
+      console.log('Notification channels are only supported on Android.');
     }
   };
-
-  // Schedule a local notification
-  const scheduleNotification = async () => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Hello! 📬',
-        body: 'This is a test notification.',
-        data: { extraData: 'Some extra data here!' },
-      },
-      trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 2,
-        repeats:false }, // Notification will trigger in 2 seconds
-    });
-  };
-
   return (
+    <>
+    <StatusBar barStyle="light-content" backgroundColor="#F97300"/>
     <View style={styles.container}>
-      <Button title="Send Notification" onPress={scheduleNotification} />
+      <TouchableOpacity style={styles.button} onPress={scheduleNotificationOnExistingChannel}>
+        <Text style={styles.buttonText}>Alert</Text>
+      </TouchableOpacity>
     </View>
+    </>
   );
 }
 
@@ -93,6 +129,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#E2DFD0',
+  },
+  button: {
+    backgroundColor: '#4CAF50', 
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8, 
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5, 
+  },
+  buttonText: {
+    color: '#FFFFFF', 
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

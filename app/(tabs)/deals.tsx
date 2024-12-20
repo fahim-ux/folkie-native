@@ -1,12 +1,27 @@
 import React from 'react';
-import {  Image,View,ScrollView ,StyleSheet,ImageBackground,StatusBar,Text} from 'react-native';
+import {  Image,View,ScrollView ,StyleSheet,ImageBackground,StatusBar,Text,Button,Alert,TouchableOpacity} from 'react-native';
 
 export default function HomeScreen() {
+  const sendalert = () =>{
+    Alert.alert(
+      'Name',
+      `Hii 💟 fahim-ux this side `,
+      [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel'
+        },
+        { text: 'Delete', onPress: () => console.log('Delete Pressed'), style: 'destructive' },
+      ]
+    )
+  }
   return (
     <>
-    <StatusBar barStyle="light-content" backgroundColor="#5e5d5d"/>
+    <StatusBar barStyle="light-content" backgroundColor="#222831"/>
     {/* <ScrollView > */}
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <ImageBackground source={require('@/assets/images/login.png')} style={styles.background}>
         <View style={styles.logo}>
           <Image source={require('@/assets/images/folkie-5.png')} style={styles.image}/>
@@ -19,8 +34,15 @@ export default function HomeScreen() {
         </View>
         </View>
         </ImageBackground>
-      </View>
+      </View> */}
     {/* </ScrollView> */}
+        <View style={styles.container1}>
+              {/* <Button title="Send Notification" onPress={scheduleNotification} /> */}
+              {/* <Button title="Alert"  /> */}
+              <TouchableOpacity style={styles.button} onPress={sendalert}>
+                <Text style={styles.buttonText}>Alert</Text>
+              </TouchableOpacity>
+        </View>
     </>
     
   );
@@ -43,6 +65,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#EEEEEE',
   },
   image:{
     width: 80,
@@ -93,7 +116,33 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 100,
+  },
+  container1: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#EEEEEE',
+  },
+  button: {
+    backgroundColor: '#76ABAE', // Green background
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8, // Rounded corners
+    shadowColor: '#000', // Shadow for iOS
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 2, height: 5 },
+    shadowRadius: 10,
+    elevation: 5, // Shadow for Android
+  },
+  buttonText: {
+    color: '#222831', // White text
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  cancel:{
+    color: '#FF204E',
+    fontSize: 16,
+    fontWeight: 'bold',
   }
-  
-  
 });
