@@ -20,22 +20,7 @@ export default function HomeScreen() {
   return (
     <>
     <StatusBar barStyle="light-content" backgroundColor="#222831"/>
-    {/* <ScrollView > */}
-      {/* <View style={styles.container}>
-        <ImageBackground source={require('@/assets/images/login.png')} style={styles.background}>
-        <View style={styles.logo}>
-          <Image source={require('@/assets/images/folkie-5.png')} style={styles.image}/>
-        </View>
-        <View></View>
-        <View style={styles.form}>
-          <Image source={require('@/assets/images/login-2.png')} style={styles.box} />
-        <View>
-          <Text style={styles.word}>SignUp!</Text>
-        </View>
-        </View>
-        </ImageBackground>
-      </View> */}
-    {/* </ScrollView> */}
+    
         <View style={styles.container1}>
               {/* <Button title="Send Notification" onPress={scheduleNotification} /> */}
               {/* <Button title="Alert"  /> */}

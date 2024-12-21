@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "275977246386",
+    "project_id": "folkie-native",
+    "storage_bucket": "folkie-native.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275977246386:android:90ab8810b99be2049b5bab",
+        "android_client_info": {
+          "package_name": "me.coderfolks.folkie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7kaFXDaiTr8nGkJ9hTaY5M5_vdwhxLjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,7 +20,7 @@ export default function App() {
   let notificationListener: any;
   let responseListener: any;
   useEffect(() => {
-    console.log('Listing Channels....🚀🚀🚀');
+    console.log('Listing Channels.... for local ....🚀🚀🚀');
     listAllChannels();
 
     const removeListeners = () => {

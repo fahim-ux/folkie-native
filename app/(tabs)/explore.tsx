@@ -1,59 +1,101 @@
-import {  View,ScrollView ,StyleSheet,Image} from 'react-native';
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, Alert,StatusBar } from 'react-native';
+import * as Notifications from 'expo-notifications';
+// import { messaging } from '@/firebaseConfig';
+
+
 export default function HomeScreen() {
+
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  useEffect(() => {
+    console.log('FCM Notifications.......🚀🚀🚀');
+    // Ask for notification permissions
+    const requestNotificationPermission = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status === 'granted') {
+        // Get the expo push token
+        const token = await Notifications.getExpoPushTokenAsync();
+        setExpoPushToken(token.data);
+        console.log('FCM 🤞 Expo push token:', token.data);
+      } else {
+        Alert.alert('Permission required', 'Please allow push notifications');
+      }
+    };
+
+    requestNotificationPermission();
+
+    // Set up listener for receiving notifications
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('Notification received in foreground:', notification);
+      }
+    );
+
+    const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('Notification response:', response);
+      }
+    );
+
+    return () => {
+      foregroundSubscription.remove();
+      backgroundSubscription.remove();
+    };
+  }, []);
+
+
+
+  // Send a notification to Firebase (FCM)
+  const sendNotificationToFCM = async () => {
+    if (!expoPushToken) {
+      console.log('No Expo push token available');
+      return;
+    }
+
+    const message = {
+      to: expoPushToken,
+      sound: 'default',
+      title: 'Test Notification 😁',
+      body: 'Hiii 💕 from FCM! ☁️',
+      data: { someData: `I'm Fahim 🤵` },
+    };
+
+    try {
+      // Send push notification to Firebase FCM
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-Encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+
+      const data = await response.json();
+      console.log('Notification sent 🚀 :', data);
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+  
   return (
     <>
-    <ScrollView >
-      <View style={styles.Container}>
-          <View style={styles.sub}>
-          <Image source={require('@/assets/images/folkie-4.png')} style={styles.image2}/>
-          </View>
-      <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-2.png')} style={styles.image}/>
-          </View>
-          <View style={styles.sub}>
-            <Image source={require('@/assets/images/folkie-3.png')} style={styles.image}/>
-          </View>
-      </View>
-    </ScrollView>
+    <StatusBar barStyle="light-content" backgroundColor="#F97300"/>
+    <View style={styles.container}>
+      <Text>Expo Push Notification Example</Text>
+      <Button title="Send Push Notification" onPress={sendNotificationToFCM} />
+    </View>
     </>
     
   );
 }
 
 const styles = StyleSheet.create({
-  Container: {
-    backgroundColor: '#FBFBFB',
-    // height: 1000,
-    display:'flex',
-    justifyContent:'flex-start',
-    alignItems:'center',
-    padding:3,
-    borderColor: '#F4F6FF',
-    borderWidth:2,
-    paddingTop:5
-  },
-  sub:{
-    backgroundColor: '#F5F7F8',
-    width: '100%',
-    height: 300,
-    marginBottom: 4,
-    borderRadius:2,
-    display:'flex',
-    justifyContent:'center',
-    alignItems:'center',
-  },
-  image:{
-    width: 360,
-    height: 280,
-    borderRadius:2,
-    aspectRatio:1.3
-  },
-  image2:{
-    width: 360,
-    height: 280,
-    borderRadius:2,
-    // aspectRatio:1
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   
 });
