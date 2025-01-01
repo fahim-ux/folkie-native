@@ -65,7 +65,7 @@ export default function App() {
 
   useEffect(() => {
     fetchUsers(); // Fetch data on mount
-    // fetchAdmins();
+    fetchAdmins();
   }, []);
 
 
@@ -102,13 +102,13 @@ export default function App() {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <Button title="Add Admin" onPress={addAdmin} />
+        <Button title="Add Admin" onPress={addAdmin} /> */}
         <Text style={styles.listTitle}>Admins:</Text>
         {Admins.map(admin => (
           <Text key={admin.id} style={styles.listItem}>
             {admin.username}
           </Text>
-        ))} */}
+        ))}
     </View>
     </>
   );
