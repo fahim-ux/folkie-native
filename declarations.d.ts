@@ -1,5 +1,5 @@
 declare module 'react-native-svg-circular-progress' {
-    const content: any;
-    export default content;
-  }
+  export const CircularProgress: any;
+  export const AnimatedCircularProgress: any;
+}
   

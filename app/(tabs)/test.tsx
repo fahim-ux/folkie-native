@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
-import AttendanceCircle from "@/components/AttendanceProgress";
+// import AttendanceCircle from "@/components/AttendanceProgress";
+import AttendanceCircle from "../../components/AttendanceProgress";
 
 // Attendance statuses
 const STATUS = {
@@ -10,221 +11,95 @@ const STATUS = {
 };
 
 export default function AttendanceGrid() {
+
+    const generateDatesForMonth = () => {
+        const now = new Date();
+        const currentDate = now.getDate();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.toLocaleString("en-US", { month: "long" }); // Full month name
+        const numDaysInMonth = new Date(currentYear, now.getMonth() + 1, 0).getDate();
+      
+        const dates = Array.from({ length: numDaysInMonth }, (_, i) => {
+            const date = new Date(currentYear, now.getMonth(), i + 1); // Get the date
+            const day = date.toLocaleDateString("en-US", { weekday: "short" }); // Get weekday name (e.g., "Mon")
+            return [`${i + 1}`, day[0]]; // Format as [date, first letter of day]
+          });
+        
+        return {
+            currentDate,
+            currentYear,
+            currentMonth,
+            numDaysInMonth,
+            dates,
+        };
+    };
+    const month_info = generateDatesForMonth();
+    const curr_month = month_info.currentMonth;
+    const dates = month_info.dates;
+    const days = ["M","T","W","T","F","S","S"];
+    const getbatches = (dates : Array<Array<string>> ,days: Array<string>) =>{
+        const result =[];
+        let week : Array<string> = [];
+        let days_length = days.length;
+        let currentIndex = 0;
+        for(let i=0 ;i<dates.length ;i++)
+        {
+            
+            // while(week.length < days_length)
+            // {
+            //     let d_idx = i % days_length;
+            //     if(dates[i][1] === days[d_idx])
+            //     {
+            //         week.push(dates[i][0]);
+            //     }
+            //     else
+            //     {
+            //         week.push("")
+            //     }
+            // }
+            console.log("i: ",i)
+            while (week.length < days.length) {
+                if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
+                  week.push(dates[currentIndex][0]); // Push the date if it matches
+                  currentIndex++;
+                } else {
+                  week.push(""); // Push empty cell if no match
+                }
+              }
+            i = currentIndex;
+            result.push(week);
+            week = [];
+        }
+        return result;
+    }
+    // console.log(month_info);
+    const batches = getbatches(dates,days);
+    console.log(batches);
     return (
         // <ScrollView >
             <View style={styles.calendar}>
                 <View style={styles.month}>
-                    <Text style={styles.month_name}>January</Text>
+                    <Text style={styles.month_name}>{curr_month}</Text>
                 </View>
                 <View style={styles.day_date}>
                     <View style={styles.days}>
+                        {days.map((cell,cellIdx)=>(
                             <View style={styles.day}>
                                 <Text style={styles.day_name}>M</Text>
                             </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>T</Text>
-                            </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>W</Text>
-                            </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>T</Text>
-                            </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>F</Text>
-                            </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>S</Text>
-                            </View>
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>S</Text>
-                            </View>
+                        ))}
                     </View>
-                    <View style={styles.dates}>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>1</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>2</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>3</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>4</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>5</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>6</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>7</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.dates}>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>1</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>2</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>3</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>4</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>5</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>6</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>7</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.dates}>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>1</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>2</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>3</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>4</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>5</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>6</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>7</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.dates}>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>1</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>2</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>3</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>4</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>5</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>6</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>7</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.dates}>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>1</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>2</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>3</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>4</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>5</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>6</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.touch}>
-                            <View style={styles.date}>
-                                <Text style={styles.date_name}>7</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+                    {batches.map((row,rowIdx)=>(
+                        <View key={rowIdx} style={styles.dates}>
+                            {row.map((cell,cellIdx)=>(
+                                <TouchableOpacity key={cellIdx} style={styles.touch}>
+                                    <View style={styles.date}>
+                                        <Text style={styles.date_name}>{cell}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        ))}
                 </View>
                 <View style={styles.details}>
                     <View style={styles.sub_details}>
@@ -232,7 +107,7 @@ export default function AttendanceGrid() {
                             <Text style={styles.sub_code}>CSC601</Text>
                     </View>
                     <View style={styles.att_per}>
-                        <AttendanceCircle percentage={60} subjectName="Chemistry"/>
+                        <AttendanceCircle percentage={60} size={100}/>
                     </View>
                 </View>
             </View>    
@@ -264,6 +139,7 @@ const styles = StyleSheet.create({
     month_name:{
         fontFamily: 'Roboto-Regular',
         fontSize: 20,
+        color:'#009FBD'
     },
     day_date:{
         width: '100%',
@@ -373,9 +249,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 5,
-        backgroundColor: '#E6A4B4',
+        backgroundColor: '#F5F7F8',
         borderRadius: 7,
         padding: 15,
+        borderColor:'#173B45',
+        borderWidth:0.5
     }
 });
 
