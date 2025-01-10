@@ -14,7 +14,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#EB3678',
         tabBarInactiveTintColor: '#006A67',
         headerShown: false,
-        tabBarShowLabel: false,
+        // tabBarShowLabel: false,
         // animation:'fade',
         // tabBarAccessibilityLabel:'igg',
         // tabBarLabelPosition:'beside-icon',
@@ -54,9 +54,9 @@ export default function TabLayout() {
         // }}
         >
       <Tabs.Screen
-        name="index"
+        name="subjects"
         options={{
-          title: 'Home',
+          title: 'Subjects',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
@@ -74,7 +74,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: 'FCM',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'nuclear' : 'nuclear-outline'} color={color} />
           ),
@@ -91,7 +91,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="deals"
         options={{
-          title: 'Deals',
+          title: 'Texpo',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'star-half' : 'star-half-outline'} color={color} />
           ),
@@ -111,7 +111,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="designer"
         options={{
-          title: 'Designer',
+          title: 'U & A',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'terminal' : 'terminal-outline'} color={color} />
           ),

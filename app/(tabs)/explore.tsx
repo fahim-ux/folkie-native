@@ -8,7 +8,7 @@ export default function HomeScreen() {
 
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   useEffect(() => {
-    console.log('FCM Notifications.......🚀🚀🚀');
+    // console.log('FCM Notifications.......🚀🚀🚀');
     // Ask for notification permissions
     const requestNotificationPermission = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -16,7 +16,7 @@ export default function HomeScreen() {
         // Get the expo push token
         const token = await Notifications.getExpoPushTokenAsync();
         setExpoPushToken(token.data);
-        console.log('FCM 🤞 Expo push token:', token.data);
+        // console.log('FCM 🤞 Expo push token:', token.data);
       } else {
         Alert.alert('Permission required', 'Please allow push notifications');
       }
@@ -27,13 +27,13 @@ export default function HomeScreen() {
     // Set up listener for receiving notifications
     const foregroundSubscription = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log('Notification received in foreground:', notification);
+        // console.log('Notification received in foreground:', notification);
       }
     );
 
     const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log('Notification response:', response);
+        // console.log('Notification response:', response);
       }
     );
 
@@ -48,7 +48,7 @@ export default function HomeScreen() {
   // Send a notification to Firebase (FCM)
   const sendNotificationToFCM = async () => {
     if (!expoPushToken) {
-      console.log('No Expo push token available');
+      // console.log('No Expo push token available');
       return;
     }
 
@@ -73,7 +73,7 @@ export default function HomeScreen() {
       });
 
       const data = await response.json();
-      console.log('Notification sent 🚀 :', data);
+      // console.log('Notification sent 🚀 :', data);
     } catch (error) {
       console.error('Error sending notification:', error);
     }

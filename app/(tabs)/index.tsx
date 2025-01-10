@@ -20,11 +20,11 @@ export default function App() {
   let notificationListener: any;
   let responseListener: any;
   useEffect(() => {
-    console.log('Listing Channels.... for local ....🚀🚀🚀');
+    // console.log('Listing Channels.... for local ....🚀🚀🚀');
     listAllChannels();
 
     const removeListeners = () => {
-      console.log('Cleaning up old notification listeners... 🔇');
+      // console.log('Cleaning up old notification listeners... 🔇');
       if (notificationListener) notificationListener.remove();
       if (responseListener) responseListener.remove();
     };
@@ -32,17 +32,17 @@ export default function App() {
     registerForPushNotificationsAsync().then((token) => {
       if (token) {
         setExpoPushToken(token);
-        console.log('Expo Push Token:', token);
+        // console.log('Expo Push Token:', token);
       }
     });
 
     // Listener for incoming notifications
     const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
-      console.log('Notification received:', notification);
+      // console.log('Notification received:', notification);
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
-      console.log('User interacted with notification:', response);
+      // console.log('User interacted with notification:', response);
     });
 
     return () => {
@@ -52,7 +52,7 @@ export default function App() {
       if (responseListener) {
         Notifications.removeNotificationSubscription(responseListener);
       }
-      console.log('Notification listeners cleaned up!');
+      // console.log('Notification listeners cleaned up!');
     };
 
   },[]);
@@ -65,7 +65,7 @@ export default function App() {
         },
         trigger: null, 
       });
-      console.log('Notification scheduled on the existing channel.');
+      // console.log('Notification scheduled on the existing channel.');
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
@@ -103,10 +103,10 @@ export default function App() {
   const listAllChannels = async () => {
     if (Platform.OS === 'android') {
       const channels = await Notifications.getNotificationChannelsAsync();
-      console.log('Notification Channels:', channels);
+      // console.log('Notification Channels:', channels);
   
       channels.forEach((channel) => {
-        console.log(`Channel ID: ${channel.id}, Name: ${channel.name}`);
+        // console.log(`Channel ID: ${channel.id}, Name: ${channel.name}`);
       });
     } else {
       console.log('Notification channels are only supported on Android.');

@@ -25,7 +25,7 @@ export default function App() {
   const addUser = async () => {
     try {
       await addDoc(collection(db, 'users'), { name });
-      console.log('User added!');
+      // console.log('User added!');
       fetchUsers(); // Refresh the list
     } catch (error) {
       console.error('Error adding user:', error);
@@ -34,7 +34,7 @@ export default function App() {
   const addAdmin = async () => {
     try {
       await addDoc(collection(db, 'admins'), { username, password });
-      console.log('Admin added!');
+      // console.log('Admin added!');
       fetchAdmins(); // Refresh the list
     } catch (error) {
       console.error('Error adding user:', error);
