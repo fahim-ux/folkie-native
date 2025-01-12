@@ -5,12 +5,11 @@ import { AnimatedCircularProgress,CircularProgress } from 'react-native-circular
 export default function AttendanceCircle ({ percentage,size }: { percentage: number; size:number}) {
   return (
     <View style={styles.container}>
-      <AnimatedCircularProgress
+      <CircularProgress
       size={size}
       width={6}
       fill={percentage}
       tintColor="#379777"
-      onAnimationComplete={() => console.log('onAnimationComplete')}
       backgroundColor="#EEEEEE" 
       lineCap="round"
       arcSweepAngle={180}
@@ -18,13 +17,13 @@ export default function AttendanceCircle ({ percentage,size }: { percentage: num
       style={styles.container}
       >
         {
-          (fill) => (
+          (percentage) => (
             <Text style={styles.percent}>
-              { fill }%
+              { percentage }%
             </Text>
           )
         }
-      </AnimatedCircularProgress>
+      </CircularProgress>
     </View>
   );
 };

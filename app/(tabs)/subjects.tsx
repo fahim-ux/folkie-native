@@ -6,7 +6,10 @@ import {
     TouchableOpacity,
 } from "react-native";
 
+import { useRouter } from "expo-router";
+
 export default function Subjects() {
+    const router = useRouter();
     return (
         <>
             <View style={styles.container}>
@@ -14,43 +17,43 @@ export default function Subjects() {
                     <Text style={styles.sub_text}>Subjects</Text>
                 </View>
                 <View style={styles.subjects}>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.touch}>
+                    <TouchableOpacity style={styles.touch} onPress={() => router.push('/(tabs)/test')}>
                         <View style={styles.subject}>
                             <Text style={styles.sub_name}>Software Engineering</Text>
                             <Text style={styles.sub_code}>CSC601</Text>

@@ -5,13 +5,17 @@ import AttendanceCircle from "../../components/AttendanceProgress";
 
 // Attendance statuses
 const STATUS = {
-  NOT_MARKED: "blue",
+  NOT_MARKED: "#FBFBFB",
   PRESENT: "green",
   ABSENT: "red",
 };
-
+type AttendanceStatus = "#F8FAFC" | "green" | "red";
+type CellType = string;
 export default function AttendanceGrid() {
 
+    const [attendance, setAttendance] = useState<Record<CellType, AttendanceStatus>>({});
+    const [totals, setTotals] = useState<{green:number, red:number, per:number}>({ green: 0, red: 0 , per:0});
+    let percentage =0;
     const generateDatesForMonth = () => {
         const now = new Date();
         const currentDate = now.getDate();
@@ -57,7 +61,7 @@ export default function AttendanceGrid() {
             //         week.push("")
             //     }
             // }
-            console.log("i: ",i)
+            // console.log("i: ",i)
             while (week.length < days.length) {
                 if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
                   week.push(dates[currentIndex][0]); // Push the date if it matches
@@ -74,7 +78,49 @@ export default function AttendanceGrid() {
     }
     // console.log(month_info);
     const batches = getbatches(dates,days);
-    console.log(batches);
+    // console.log(batches);
+    const handletouch = (cell: CellType) => {
+        if (!cell) return; // Skip if the cell is empty or invalid
+        // console.log(cell);
+        setAttendance((prevState) => {
+          const currentStatus = prevState[cell] || "#F8FAFC";
+        //   console.log(currentStatus,"hii") // Default to "blue" if not set
+          let nextStatus: AttendanceStatus;
+    
+          switch (currentStatus) {
+            case "#F8FAFC":
+              nextStatus = "green";
+              break;
+            case "green":
+              nextStatus = "red";
+              break;
+            case "red":
+              nextStatus = "#F8FAFC";
+              break;
+            default:
+              nextStatus = "#F8FAFC"; // Fallback in case of unexpected status
+          }
+          setTotals((prevTotals) => {
+            const greenChange = currentStatus === "green" ? -1 : nextStatus === "green" ? 1 : 0;
+            const redChange = currentStatus === "red" ? -1 : nextStatus === "red" ? 1 : 0;
+            const newGreen = prevTotals.green + greenChange;
+            const newRed = prevTotals.red + redChange;
+            const total = newGreen + newRed;
+
+            const per = total > 0 ? (newGreen / total) * 100 : 0;
+
+            return {
+                green: newGreen,
+                red: newRed,
+                per: parseFloat(per.toFixed(2)), // Round to 2 decimal places
+            };
+          });
+          return {
+            ...prevState,
+            [cell]: nextStatus,
+          };
+        });
+      };
     return (
         // <ScrollView >
             <View style={styles.calendar}>
@@ -84,15 +130,18 @@ export default function AttendanceGrid() {
                 <View style={styles.day_date}>
                     <View style={styles.days}>
                         {days.map((cell,cellIdx)=>(
-                            <View style={styles.day}>
-                                <Text style={styles.day_name}>M</Text>
+                            <View style={styles.day} key={cellIdx}>
+                                <Text style={styles.day_name}>{cell}</Text>
                             </View>
                         ))}
                     </View>
                     {batches.map((row,rowIdx)=>(
                         <View key={rowIdx} style={styles.dates}>
                             {row.map((cell,cellIdx)=>(
-                                <TouchableOpacity key={cellIdx} style={styles.touch}>
+                                <TouchableOpacity key={cellIdx} 
+                                style={[styles.touch, { backgroundColor: attendance[cell] || STATUS.NOT_MARKED }]}
+                                onPress={()=>handletouch(cell)}
+                                activeOpacity={1}>
                                     <View style={styles.date}>
                                         <Text style={styles.date_name}>{cell}</Text>
                                     </View>
@@ -107,7 +156,9 @@ export default function AttendanceGrid() {
                             <Text style={styles.sub_code}>CSC601</Text>
                     </View>
                     <View style={styles.att_per}>
-                        <AttendanceCircle percentage={60} size={100}/>
+                        <AttendanceCircle percentage={totals.per} size={100}/>
+                        <Text style={styles.sub_code}>Present : {totals.green}</Text>
+                        <Text style={styles.sub_code}>Absent : {totals.red}</Text>
                     </View>
                 </View>
             </View>    
@@ -194,7 +245,7 @@ const styles = StyleSheet.create({
     },
     touch:{
         width: '13.7%',
-        // backgroundColor: 'red',
+        backgroundColor: '#8D77AB',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -246,14 +297,16 @@ const styles = StyleSheet.create({
     att_per:{
         width: '100%',
         height: 120,
-        justifyContent: 'center',
-        alignItems: 'center',
         marginTop: 5,
         backgroundColor: '#F5F7F8',
         borderRadius: 7,
         padding: 15,
         borderColor:'#173B45',
-        borderWidth:0.5
+        borderWidth:0.5,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
     }
 });
 
