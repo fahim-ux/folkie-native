@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 import Navbar from './Navbar';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import LoadingScreen from '@/components/LoadingScreen';
+import { createTables,initializeSubjects } from './db/db';
+import { initializeDatabase, getSubjects } from './db/db';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -32,6 +34,18 @@ export default function RootLayout() {
     useEffect(()=>{
         SplashScreen.preventAutoHideAsync();
         loadFonts();
+        // createTables();
+        const initialize = async () => {
+          try {
+            await initializeDatabase(); // Create tables and add default subjects
+            const subjects = await getSubjects(); // Fetch subjects
+            console.log('Subjects - 🤖:', subjects); // Log subjects to verify
+          } catch (error) {
+            console.error('Error initializing app:', error);
+          }
+        };
+    
+        initialize();
     },[]);
 
     if (!fontsLoaded) {

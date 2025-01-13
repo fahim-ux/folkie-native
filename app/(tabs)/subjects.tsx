@@ -7,9 +7,28 @@ import {
 } from "react-native";
 
 import { useRouter } from "expo-router";
+import { getSubjects } from "../db/db";
+import  Subject  from "../db/types";
 
 export default function Subjects() {
     const router = useRouter();
+    const [subjects,setSubjects] = useState<Subject[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const fetchSubjects = async () => {
+        try {
+          setLoading(true);
+          const data = await getSubjects();
+          setSubjects(data);
+        } catch (error) {
+          console.error('Error fetching subjects:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+        useEffect(() => {
+            fetchSubjects();
+        }, []);
     return (
         <>
             <View style={styles.container}>

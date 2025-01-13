@@ -1,13 +1,12 @@
 // Subject type
-export interface Subject {
+export  interface Subject {
     id: number;
     name: string;
-    attendedClasses: number;
-    totalClasses: number;
+    code: string;
   }
   
   // Attendance type
-  export interface Attendance {
+export default interface Attendance {
     id: number;
     subjectId: number;
     date: string; // ISO string format
