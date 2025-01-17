@@ -2,13 +2,13 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font'
-import { useEffect ,useState} from 'react';
+import { useEffect ,useState, useCallback} from 'react';
 import 'react-native-reanimated';
 import Navbar from './Navbar';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import LoadingScreen from '@/components/LoadingScreen';
-import { createTables,initializeSubjects } from './db/db';
-import { initializeDatabase, getSubjects } from './db/db';
+import { connectToDatabase,createTables } from './db/db';
+import { useSQLiteContext } from 'expo-sqlite';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,22 +30,23 @@ export default function RootLayout() {
             SplashScreen.hideAsync();
         },);
     };
+    const loadData = useCallback(async () => {
+      try {
+        const db = await connectToDatabase()
+        await createTables(db)
+      } catch (error) {
+        console.error(error)
+      }
+    }, [])
 
+    useEffect(() => {
+      console.log('loading data')
+      loadData()
+    }, [loadData])
+    
     useEffect(()=>{
         SplashScreen.preventAutoHideAsync();
         loadFonts();
-        // createTables();
-        const initialize = async () => {
-          try {
-            await initializeDatabase(); // Create tables and add default subjects
-            const subjects = await getSubjects(); // Fetch subjects
-            console.log('Subjects - 🤖:', subjects); // Log subjects to verify
-          } catch (error) {
-            console.error('Error initializing app:', error);
-          }
-        };
-    
-        initialize();
     },[]);
 
     if (!fontsLoaded) {

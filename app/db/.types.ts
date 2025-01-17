@@ -12,3 +12,10 @@ export default interface Attendance {
     date: string; // ISO string format
   }
   
+export interface Contact {  
+    id: number;
+    firstName: string;
+    name: string;
+    phoneNumber: string;
+}
+export type SingleUserPreference = "colorPreference" | "languagePreference"

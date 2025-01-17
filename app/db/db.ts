@@ -1,112 +1,97 @@
-import SQLite from 'react-native-sqlite-storage';
-import  Subject  from './types';
+import * as SQLite from 'expo-sqlite';
+import {type SQLiteDatabase,} from 'expo-sqlite';
 
-SQLite.enablePromise(true);
+// export const connectToDatabase = () => {
+//   console.log('Connecting to database from db.ts');
+//   const db = SQLite.openDatabaseAsync('yourProjectName.db');
+//   console.log('Database opened successfully:', db);
+//   return db;
+// };
+export const connectToDatabase = async (): Promise<SQLiteDatabase> => {
+  console.log('Connecting to database from db.ts');  
+  try {
+    const db: SQLiteDatabase = await SQLite.openDatabaseAsync('yourProjectName.db');
 
+    console.log('Database opened successfully:', db);
+    return db;
 
-let db: SQLite.SQLiteDatabase | null = null;
-
-// Function to initialize the database
-export const openDatabase = async () => {
-  if (!db) {
-    
-    try {
-      console.log('Opening database... : ',db);
-      db = await SQLite.openDatabase({
-        name: 'AttendanceDB',
-        location: 'default',
-      });
-      console.log('Database opened successfully');
-    } catch (error) {
-      console.error('Error opening database:', error);
-    }
+  } catch (error) {
+    console.error('Database connection error:', error);
+    throw new Error('Failed to connect to database');
   }
-  return db;
 };
 
+export const createTables = async (db: SQLiteDatabase): Promise<void> => {
 
+  const contactsQuery = `
+    CREATE TABLE IF NOT EXISTS Contacts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firstName TEXT NOT NULL,
+      lastName TEXT,
+      phoneNumber TEXT NOT NULL
+    );
+  `;
 
-// export default db;
-
-export const createTables = async () => {
   try {
-    const dbInstance = await openDatabase();
-    if (dbInstance) {
-      await dbInstance.transaction(async (tx) => {
-        await tx.executeSql(
-          `CREATE TABLE IF NOT EXISTS subjects (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL,
-              code TEXT NOT NULL UNIQUE
-          );`
-        );
-      });
-      console.log('Tables created successfully');
-    }
+    console.log('Creating tables...');
+    await db.execAsync(contactsQuery);
+    console.log('Tables created successfully 🤖!');
   } catch (error) {
     console.error('Error creating tables:', error);
+    throw new Error('Failed to create tables in the database');
   }
 };
 
 
-export const addSubject = async (name: string, code: string) => {
+export const addContact = async (
+  db: SQLiteDatabase,
+  firstName: string,
+  lastName: string,
+  phoneNumber: string
+): Promise<void> => {
+  const addContactQuery = `
+    INSERT INTO Contacts (firstName, lastName, phoneNumber)
+    VALUES ('${firstName}', '${lastName}', '${phoneNumber}');
+  `;
+  console.log('addContactQuery - SQL : ', addContactQuery);
   try {
-    const dbInstance = await openDatabase();
-    if (dbInstance) {
-      await dbInstance.transaction(async (tx) => {
-        await tx.executeSql('INSERT INTO subjects (name, code) VALUES (?, ?);', [name, code]);
-      });
-      console.log('Subject added successfully');
-    }
+    console.log('Adding contact...');
+    
+    // Using execAsync to insert the contact into the database
+    await db.execAsync(addContactQuery);
+    
+    console.log('Contact added successfully 🤖!');
   } catch (error) {
-    console.error('Error adding subject:', error);
+    console.error('Error adding contact:', error);
+    throw new Error('Failed to add contact to the database');
   }
 };
 
-
-export const getSubjects = async (): Promise<Subject[]> => {
+export const getContacts = async (db: SQLiteDatabase): Promise<Array<{ id: number; firstName: string; lastName: string; phone: string }>> => {
   try {
-    const dbInstance = await openDatabase();
-    let subjects: Subject[] = [];
-    if (dbInstance) {
-      await dbInstance.transaction((tx) => {
-        tx.executeSql('SELECT * FROM subjects;', [], (tx, results) => {
-          const rows = results.rows;
-          for (let i = 0; i < rows.length; i++) {
-            subjects.push(rows.item(i));
-          }
-        });
-      });
+    console.log('Fetching contacts...');
+    
+    // Query to select all rows from the Contacts table
+    const getContactsQuery = `
+      SELECT * FROM Contacts;
+    `;
+
+    // Execute the query using execAsync
+    const results:Array<string> = await db.getAllAsync(getContactsQuery);
+    // Parse the results into a usable format
+    if (results && results.length > 0) {
+      return results.map((row: any) => ({
+        id: row.id,
+        firstName: row.firstName,
+        lastName: row.lastName,
+        phone: row.phone,
+      }));
     }
-    return subjects;
-  } catch (error) {
-    console.error('Error fetching subjects:', error);
+
+    console.log('No contacts found.');
     return [];
-  }
-};
-
-export const initializeSubjects = async (): Promise<void> => {
-  const subjects = [
-    { name: 'Software Engineering', code: 'CSC601' },
-    { name: 'Data Communications and Networks', code: 'CSC602' },
-    { name: 'Information Coding Theory', code: 'CSE618' },
-    { name: 'Advanced DBMS', code: 'CSE623' },
-  ];
-
-  for (const subject of subjects) {
-    await addSubject(subject.name, subject.code);
-  }
-};
-
-// initializeSubjects();
-export const initializeDatabase = async () => {
-  try {
-    await createTables(); // Create tables if not already created
-    await initializeSubjects(); // Populate subjects if not already populated
-    console.log('Database initialized successfully');
   } catch (error) {
-    console.error('Error initializing database:', error);
+    console.error('Error fetching contacts:', error);
+    throw new Error('Failed to fetch contacts from the database');
   }
-};
-
-export default db;
+}
