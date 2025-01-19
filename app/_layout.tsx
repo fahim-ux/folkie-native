@@ -9,6 +9,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import LoadingScreen from '@/components/LoadingScreen';
 import { connectToDatabase,createTables } from './db/db';
 import { useSQLiteContext } from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,6 +35,7 @@ export default function RootLayout() {
       try {
         const db = await connectToDatabase()
         await createTables(db)
+        console.log("Root db dir : ",FileSystem.documentDirectory);
       } catch (error) {
         console.error(error)
       }

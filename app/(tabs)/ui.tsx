@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
-// import AttendanceCircle from "@/components/AttendanceProgress";
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from "react-native";
 import AttendanceCircle from "../../components/AttendanceProgress";
 
-// Attendance statuses
 const STATUS = {
   NOT_MARKED: "#FBFBFB",
   PRESENT: "green",
@@ -15,18 +13,17 @@ export default function AttendanceGrid() {
 
     const [attendance, setAttendance] = useState<Record<CellType, AttendanceStatus>>({});
     const [totals, setTotals] = useState<{green:number, red:number, per:number}>({ green: 0, red: 0 , per:0});
-    let percentage =0;
     const generateDatesForMonth = () => {
         const now = new Date();
         const currentDate = now.getDate();
         const currentYear = now.getFullYear();
-        const currentMonth = now.toLocaleString("en-US", { month: "long" }); // Full month name
+        const currentMonth = now.toLocaleString("en-US", { month: "long" }); 
         const numDaysInMonth = new Date(currentYear, now.getMonth() + 1, 0).getDate();
       
         const dates = Array.from({ length: numDaysInMonth }, (_, i) => {
-            const date = new Date(currentYear, now.getMonth(), i + 1); // Get the date
-            const day = date.toLocaleDateString("en-US", { weekday: "short" }); // Get weekday name (e.g., "Mon")
-            return [`${i + 1}`, day[0]]; // Format as [date, first letter of day]
+            const date = new Date(currentYear, now.getMonth(), i + 1); 
+            const day = date.toLocaleDateString("en-US", { weekday: "short" });
+            return [`${i + 1}`, day[0]];
           });
         
         return {
@@ -42,49 +39,41 @@ export default function AttendanceGrid() {
     const dates = month_info.dates;
     const days = ["M","T","W","T","F","S","S"];
     const getbatches = (dates : Array<Array<string>> ,days: Array<string>) =>{
-        const result =[];
-        let week : Array<string> = [];
+        const result:Array<Array<string>> =[];
+        
         let days_length = days.length;
         let currentIndex = 0;
-        for(let i=0 ;i<dates.length ;i++)
-        {
-            
-            // while(week.length < days_length)
-            // {
-            //     let d_idx = i % days_length;
-            //     if(dates[i][1] === days[d_idx])
-            //     {
-            //         week.push(dates[i][0]);
-            //     }
-            //     else
-            //     {
-            //         week.push("")
-            //     }
-            // }
-            // console.log("i: ",i)
-            while (week.length < days.length) {
-                if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
-                  week.push(dates[currentIndex][0]); // Push the date if it matches
-                  currentIndex++;
-                } else {
-                  week.push(""); // Push empty cell if no match
+        // for(let i=0 ;i<dates.length ;i++)
+        // {
+        //     while (week.length < days.length) {
+        //         if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
+        //           week.push(dates[currentIndex][0]);
+        //           currentIndex++;
+        //         } else {
+        //           week.push("");
+        //         }
+        //       }
+        //     i = currentIndex;
+        //     result.push(week);
+        //     week = [];
+        // }
+        while(currentIndex < dates.length){
+            const week : Array<string> = Array(days.length).fill("");
+            for(let i=0;i<days_length;i++){
+                if(currentIndex < days_length && dates[currentIndex][1]===days[i]){
+                    week[i] = dates[currentIndex][0];
+                    currentIndex++;
                 }
-              }
-            i = currentIndex;
+            }
             result.push(week);
-            week = [];
         }
         return result;
     }
-    // console.log(month_info);
     const batches = getbatches(dates,days);
-    // console.log(batches);
     const handletouch = (cell: CellType) => {
-        if (!cell) return; // Skip if the cell is empty or invalid
-        // console.log(cell);
+        if (!cell) return;
         setAttendance((prevState) => {
           const currentStatus = prevState[cell] || "#F8FAFC";
-        //   console.log(currentStatus,"hii") // Default to "blue" if not set
           let nextStatus: AttendanceStatus;
     
           switch (currentStatus) {
@@ -98,7 +87,7 @@ export default function AttendanceGrid() {
               nextStatus = "#F8FAFC";
               break;
             default:
-              nextStatus = "#F8FAFC"; // Fallback in case of unexpected status
+              nextStatus = "#F8FAFC"; 
           }
           setTotals((prevTotals) => {
             const greenChange = currentStatus === "green" ? -1 : nextStatus === "green" ? 1 : 0;
@@ -112,7 +101,7 @@ export default function AttendanceGrid() {
             return {
                 green: newGreen,
                 red: newRed,
-                per: parseFloat(per.toFixed(2)), // Round to 2 decimal places
+                per: parseFloat(per.toFixed(2)),
             };
           });
           return {
@@ -122,7 +111,8 @@ export default function AttendanceGrid() {
         });
       };
     return (
-        // <ScrollView >
+        <>
+            <StatusBar barStyle="light-content" backgroundColor="#91C8E4"/>
             <View style={styles.calendar}>
                 <View style={styles.month}>
                     <Text style={styles.month_name}>{curr_month}</Text>
@@ -162,7 +152,7 @@ export default function AttendanceGrid() {
                     </View>
                 </View>
             </View>    
-        // </ScrollView>
+        </>
     );
 }
 
@@ -170,10 +160,8 @@ const styles = StyleSheet.create({
     calendar:{
         width: '100%',
         height: '100%',
-        // height: 50,
         backgroundColor: '#91C8E4',
         display: 'flex',
-        // justifyContent: 'center',
         alignItems: 'center',
         padding: 5,
         gap: 9,
@@ -194,9 +182,7 @@ const styles = StyleSheet.create({
     },
     day_date:{
         width: '100%',
-        // height: 200,
         backgroundColor: '#F5F7F8',
-        // justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 7,
         padding: 8,
@@ -210,13 +196,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        // borderColor: 'red',
-        // borderWidth: 1,
         padding: 2,
         gap: 2,
     },
     day:{
-        // backgroundColor: '#E6A4B4',
         width: '13.7%',
         height: '100%',
         display: 'flex',
@@ -264,7 +247,6 @@ const styles = StyleSheet.create({
     },
     details:{
         width: '100%',
-        // height: 200,
         backgroundColor: '#F5F7F8',
         display: 'flex',
         justifyContent: 'center',
@@ -276,7 +258,6 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 70,
         justifyContent: 'center',
-        // alignItems: 'center',
         marginTop: 5,
         backgroundColor: '#D9EAFD',
         borderRadius: 7,

@@ -53,6 +53,23 @@ export default function TabLayout() {
         //   }
         // }}
         >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon name={focused ? 'nuclear' : 'nuclear-outline'} color={color} />
+            ),
+            tabBarItemStyle: { backgroundColor: '#DDE6ED' ,
+              // margin:5,
+              // height:80,
+              // width:20,
+              // display:'flex',
+              justifyContent:'center',
+              alignItems:'center',
+            },
+          }}
+        />
       <Tabs.Screen
         name="subjects"
         options={{
@@ -60,7 +77,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
           ),
-          tabBarItemStyle: { backgroundColor: '#DDE6ED',
+          tabBarItemStyle: { backgroundColor: 'white',
             // margin:5,
             // height:80,
             // width:20,
@@ -72,26 +89,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="ui"
         options={{
-          title: 'FCM',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'nuclear' : 'nuclear-outline'} color={color} />
-          ),
-          tabBarItemStyle: { backgroundColor: 'white' ,
-            // margin:5,
-            // height:80,
-            // width:20,
-            // display:'flex',
-            justifyContent:'center',
-            alignItems:'center',
-          },
-        }}
-      />
-      <Tabs.Screen
-        name="deals"
-        options={{
-          title: 'Texpo',
+          title: 'UI',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'star-half' : 'star-half-outline'} color={color} />
           ),
@@ -104,14 +104,14 @@ export default function TabLayout() {
             alignItems:'center',
           },
           tabBarStyle:{
-            display:'none',
+            // display:'none',
           }
         }}
       />
       <Tabs.Screen
-        name="test"
+        name="admin"
         options={{
-          title: 'U & A',
+          title: 'Admin',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'terminal' : 'terminal-outline'} color={color} />
           ),
