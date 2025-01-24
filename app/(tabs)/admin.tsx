@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Text, TextInput, View,StyleSheet, TouchableOpacity,StatusBar } from "react-native";
 import { SQLiteProvider,useSQLiteContext,} from 'expo-sqlite';
 import { addSubject,getSubjects } from "../db/db";
-import { useFocusEffect } from '@react-navigation/native';
-
+import { useLocalSearchParams } from 'expo-router';
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Subjects() {
   return (
@@ -15,22 +15,10 @@ export default function Subjects() {
 
 function Main() {
   const db = useSQLiteContext();
+  const params = useLocalSearchParams();
+  console.log('Params:', params);
   const [subject,setsubject] = useState<string>('');
   const [sub_code,setsub_code] = useState<string>('');
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // Set the status bar color when the screen is focused
-  //     StatusBar.setBackgroundColor('FF204E');
-  //     StatusBar.setBarStyle('light-content');
-
-  //     return () => {
-  //       // Reset the status bar color when the screen is unfocused
-  //       StatusBar.setBackgroundColor('default');
-  //       StatusBar.setBarStyle('default');
-  //     };
-  //   }, [])
-  // );
-
   const addSubect_on_press = async (subject:string,sub_code:string) => {
     try{
       const ref_sub = subject.replace(/\s+/g, ' ').trim();
@@ -54,21 +42,17 @@ function Main() {
   
   return (
     <>
-    <StatusBar barStyle="light-content" backgroundColor="#FF204E"/>
+    {/* <StatusBar barStyle="light-content" backgroundColor="#FF204E"/> */}
     <View>
-      <View style={styles.container}>
-        <View style={styles.sub_container}>
+      <View style={[styles.container]}>
+        <View style={[styles.sub_container]}>
           <View style={styles.text_input}>
-            <Text style={styles.text_head}>AddSubjects</Text>
             <TextInput placeholder="Subject Name"  placeholderTextColor="#888" style={styles.input} value={subject} onChangeText={setsubject}/>
             <TextInput placeholder="Subject Code"  placeholderTextColor="#888" style={styles.input} value={sub_code} onChangeText={setsub_code}/>
             <TouchableOpacity style={styles.button} onPress={()=>addSubect_on_press(subject,sub_code)}>
-              <Text style={styles.text}> Insert </Text>
+              <Text style={styles.text}> Update </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.button} onPress={()=>disp_subjects()}>
-              <Text style={styles.text}> GetSubjects </Text>
-            </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -113,7 +97,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   button:{
-    
     color: '#fff',
     borderRadius: 5,
     width: '100%',

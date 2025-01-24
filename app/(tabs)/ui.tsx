@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, BackHandler } from "react-native";
 import AttendanceCircle from "../../components/AttendanceProgress";
+import { useLocalSearchParams } from 'expo-router';
+import { SQLiteProvider,useSQLiteContext,} from 'expo-sqlite';
 
 const STATUS = {
   NOT_MARKED: "#FBFBFB",
@@ -9,10 +11,22 @@ const STATUS = {
 };
 type AttendanceStatus = "#F8FAFC" | "green" | "red";
 type CellType = string;
-export default function AttendanceGrid() {
 
+
+export default function AttendanceGrid() {
+    return (
+        <SQLiteProvider databaseName="yourProjectName.db">
+            <Main />
+        </SQLiteProvider>
+    );
+}
+
+function Main() {
+    const params = useLocalSearchParams();
+    const db = useSQLiteContext();
     const [attendance, setAttendance] = useState<Record<CellType, AttendanceStatus>>({});
     const [totals, setTotals] = useState<{green:number, red:number, per:number}>({ green: 0, red: 0 , per:0});
+
     const generateDatesForMonth = () => {
         const now = new Date();
         const currentDate = now.getDate();
@@ -23,6 +37,8 @@ export default function AttendanceGrid() {
         const dates = Array.from({ length: numDaysInMonth }, (_, i) => {
             const date = new Date(currentYear, now.getMonth(), i + 1); 
             const day = date.toLocaleDateString("en-US", { weekday: "short" });
+            const formattedDate = date.toISOString().split('T')[0];
+            console.log(formattedDate);
             return [`${i + 1}`, day[0]];
           });
         
@@ -37,35 +53,26 @@ export default function AttendanceGrid() {
     const month_info = generateDatesForMonth();
     const curr_month = month_info.currentMonth;
     const dates = month_info.dates;
+    console.log(dates);
     const days = ["M","T","W","T","F","S","S"];
     const getbatches = (dates : Array<Array<string>> ,days: Array<string>) =>{
-        const result:Array<Array<string>> =[];
-        
-        let days_length = days.length;
+        const result =[];
+        let week : Array<string> = [];
+        // let days_length = days.length;
         let currentIndex = 0;
-        // for(let i=0 ;i<dates.length ;i++)
-        // {
-        //     while (week.length < days.length) {
-        //         if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
-        //           week.push(dates[currentIndex][0]);
-        //           currentIndex++;
-        //         } else {
-        //           week.push("");
-        //         }
-        //       }
-        //     i = currentIndex;
-        //     result.push(week);
-        //     week = [];
-        // }
-        while(currentIndex < dates.length){
-            const week : Array<string> = Array(days.length).fill("");
-            for(let i=0;i<days_length;i++){
-                if(currentIndex < days_length && dates[currentIndex][1]===days[i]){
-                    week[i] = dates[currentIndex][0];
-                    currentIndex++;
+        for(let i=0 ;i<dates.length ;i++)
+        {
+            while (week.length < days.length) {
+                if (currentIndex < dates.length && dates[currentIndex][1] === days[week.length]) {
+                  week.push(dates[currentIndex][0]);
+                  currentIndex++;
+                } else {
+                  week.push("");
                 }
-            }
+              }
+            i = currentIndex;
             result.push(week);
+            week = [];
         }
         return result;
     }
@@ -135,6 +142,7 @@ export default function AttendanceGrid() {
                                     <View style={styles.date}>
                                         <Text style={styles.date_name}>{cell}</Text>
                                     </View>
+                                    
                                 </TouchableOpacity>
                             ))}
                         </View>

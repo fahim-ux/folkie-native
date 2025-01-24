@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { AnimatedCircularProgress,CircularProgress } from 'react-native-circular-progress';
+import { CircularProgress } from 'react-native-circular-progress';
 
 export default function AttendanceCircle ({ percentage,size }: { percentage: number; size:number}) {
   return (
