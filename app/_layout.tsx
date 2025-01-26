@@ -35,14 +35,14 @@ export default function RootLayout() {
       try {
         const db = await connectToDatabase()
         await createTables(db)
-        console.log("Root db dir : ",FileSystem.documentDirectory);
+        // console.log("Root db dir : ",FileSystem.documentDirectory);
       } catch (error) {
         console.error(error)
       }
     }, [])
 
     useEffect(() => {
-      console.log('loading data')
+      // console.log('loading data')
       loadData()
     }, [loadData])
     

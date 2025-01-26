@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, StatusBar, BackHandler } from
 import AttendanceCircle from "../../components/AttendanceProgress";
 import { useLocalSearchParams } from 'expo-router';
 import { SQLiteProvider,useSQLiteContext,} from 'expo-sqlite';
+import { getAllAttendance,insertIntoAttendance } from "../db/db";
 
 const STATUS = {
   NOT_MARKED: "#FBFBFB",
@@ -11,7 +12,11 @@ const STATUS = {
 };
 type AttendanceStatus = "#F8FAFC" | "green" | "red";
 type CellType = string;
-
+interface Params {
+    id: number;
+    subName: string;
+    subcode: string;
+  }
 
 export default function AttendanceGrid() {
     return (
@@ -22,23 +27,68 @@ export default function AttendanceGrid() {
 }
 
 function Main() {
-    const params = useLocalSearchParams();
+    const rawParams  = useLocalSearchParams();
+    const params: Params = {
+        id: typeof rawParams.id === 'string' ? parseInt(rawParams.id, 10) : 0,
+        subName: typeof rawParams.subName === 'string' ? rawParams.subName : '',
+        subcode: typeof rawParams.subcode === 'string' ? rawParams.subcode : '',
+      };
+    // console.log("params:",params.id);
     const db = useSQLiteContext();
     const [attendance, setAttendance] = useState<Record<CellType, AttendanceStatus>>({});
     const [totals, setTotals] = useState<{green:number, red:number, per:number}>({ green: 0, red: 0 , per:0});
+    const [subjectId, setSubjectId] = useState<number>(3); 
+    const [date, setDate] = useState<string>('26');
+    const [day, setDay] = useState<string>('Sunday'); 
+    const [month, setMonth] = useState<string>('January'); 
+    const [year, setYear] = useState<string>('2022'); 
+    const [status, setStatus] = useState<string>('D'); 
+    
+    const getAttendance = async () => {
+        try {
+            const data = await getAllAttendance(db,subjectId);
+            // console.log('Attendance:', data);
+        } catch (error) {
+            console.error('Error fetching attendance:', error);
+        }
+    }
+
+    const insert_attendace = async (
+      subject_id: number,
+      date: string,
+      month: string,
+      year: string,
+      day: string,
+      status: string) => {
+        if(!subject_id || !date || !month || !year || !day || !status) {
+            throw new Error('Invalid attendance data');
+        }
+
+        try {
+            // console.log("subject_id:",subject_id,"date:",date,"month:",month,"year:",year,"day:",day,"status:",status);
+            await insertIntoAttendance(db, subject_id, date, month, year, day, status);
+          console.log('Attendance added successfully 🤖!');
+        } catch (error) {
+          console.error(error);
+        }
+    }
+
+
+    
 
     const generateDatesForMonth = () => {
         const now = new Date();
         const currentDate = now.getDate();
         const currentYear = now.getFullYear();
-        const currentMonth = now.toLocaleString("en-US", { month: "long" }); 
+        const currentMonth = now.toLocaleString("en-US", { month: "long" });
+        const currentDay = now.toLocaleString("en-US", { weekday: "long" }); 
         const numDaysInMonth = new Date(currentYear, now.getMonth() + 1, 0).getDate();
       
         const dates = Array.from({ length: numDaysInMonth }, (_, i) => {
             const date = new Date(currentYear, now.getMonth(), i + 1); 
             const day = date.toLocaleDateString("en-US", { weekday: "short" });
             const formattedDate = date.toISOString().split('T')[0];
-            console.log(formattedDate);
+            // console.log(formattedDate);
             return [`${i + 1}`, day[0]];
           });
         
@@ -46,6 +96,7 @@ function Main() {
             currentDate,
             currentYear,
             currentMonth,
+            currentDay,
             numDaysInMonth,
             dates,
         };
@@ -53,7 +104,16 @@ function Main() {
     const month_info = generateDatesForMonth();
     const curr_month = month_info.currentMonth;
     const dates = month_info.dates;
-    console.log(dates);
+    const currentDate = month_info.currentDate;
+    const currentYear = month_info.currentYear;
+    const currentDay = month_info.currentDay;
+    // console.log("current month:",curr_month);
+    // console.log("current date:",currentDate);
+    // console.log("current year:",currentYear);
+    // setDate(`${currentDate}`);
+    // setMonth(`${curr_month}`);
+
+
     const days = ["M","T","W","T","F","S","S"];
     const getbatches = (dates : Array<Array<string>> ,days: Array<string>) =>{
         const result =[];
@@ -69,7 +129,7 @@ function Main() {
                 } else {
                   week.push("");
                 }
-              }
+            }
             i = currentIndex;
             result.push(week);
             week = [];
@@ -111,15 +171,34 @@ function Main() {
                 per: parseFloat(per.toFixed(2)),
             };
           });
+          setStatus(nextStatus);
           return {
             ...prevState,
             [cell]: nextStatus,
           };
         });
       };
+
+
+    
+    
+      useEffect(() => {
+        setSubjectId(params.id);
+        // setDate(`${currentDate}`);
+        setMonth(`${curr_month}`);
+        // setDay(`${currentDay}`);
+        setYear(`${currentYear}`);
+        
+    }, []);
+      
+    useEffect(() => {
+        insert_attendace(subjectId,date,month,year,day,status).then(getAttendance);
+        // getAttendance();
+    },[status,day,date]);
+
     return (
         <>
-            <StatusBar barStyle="light-content" backgroundColor="#91C8E4"/>
+            {/* <StatusBar barStyle="light-content" backgroundColor="#91C8E4"/> */}
             <View style={styles.calendar}>
                 <View style={styles.month}>
                     <Text style={styles.month_name}>{curr_month}</Text>
@@ -137,12 +216,12 @@ function Main() {
                             {row.map((cell,cellIdx)=>(
                                 <TouchableOpacity key={cellIdx} 
                                 style={[styles.touch, { backgroundColor: attendance[cell] || STATUS.NOT_MARKED }]}
-                                onPress={()=>handletouch(cell)}
+                                onPress={()=>{handletouch(cell),setDate(cell),setDay(days[cellIdx]);
+                                }}
                                 activeOpacity={1}>
                                     <View style={styles.date}>
                                         <Text style={styles.date_name}>{cell}</Text>
                                     </View>
-                                    
                                 </TouchableOpacity>
                             ))}
                         </View>
@@ -150,8 +229,8 @@ function Main() {
                 </View>
                 <View style={styles.details}>
                     <View style={styles.sub_details}>
-                            <Text style={styles.sub_name}>Software Engineering</Text>
-                            <Text style={styles.sub_code}>CSC601</Text>
+                            {/* <Text style={styles.sub_name}>{params.subName}</Text>
+                            <Text style={styles.sub_code}>{params.subcode}</Text> */}
                     </View>
                     <View style={styles.att_per}>
                         <AttendanceCircle percentage={totals.per} size={100}/>

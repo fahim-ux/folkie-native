@@ -1,8 +1,8 @@
 import React,{useEffect,useState} from "react";
-import { Text,StyleSheet,View,TouchableOpacity,StatusBar,Modal, Alert} from "react-native";
+import { Text,StyleSheet,View,TouchableOpacity,StatusBar,Modal, Alert,TextInput} from "react-native";
 import { SQLiteProvider,useSQLiteContext,} from 'expo-sqlite';
 import { useRouter } from "expo-router";
-import { getSubjects,deleteSubject } from "../db/db";
+import { getSubjects,deleteSubject,addSubject,updateSubject } from "../db/db";
 import AttendanceCircle from "../../components/AttendanceProgress";
 
 export default function Subjects() {
@@ -19,6 +19,10 @@ function Main() {
     const [subjects,setSubjects] = useState<{ id: number; subName: string; subCode: string; }[]>([]);
     const [isMenuVisible, setMenuVisible] = useState<boolean>(false);
     const [selectedSubject, setSelectedSubject] = useState<{ id: number; subName: string; subCode: string; }|null>(null);
+    const [isAddVisible, setAddVisible] = useState<boolean>(true);
+    const [isEditVisible, setEditVisible] = useState<boolean>(true);
+    const [subject,setsubject] = useState<string>('');
+    const [sub_code,setsub_code] = useState<string>('');
     const fetchSubjects = async () => {
         try {
             const data = await getSubjects(db);
@@ -35,6 +39,32 @@ function Main() {
         console.log(subject);
         setSelectedSubject(subject); 
         setMenuVisible(true); 
+    }
+
+    const add_sub = async (subject:string,sub_code:string) => {
+
+        try{
+            const ref_sub = subject.replace(/\s+/g, ' ').trim();
+            if(ref_sub === '' || sub_code === ''){
+                Alert.alert('Empty Fields','Subject name or code cannot be empty',
+                    [{text: 'OK', 
+                        // onPress: () => console.log('OK Pressed')
+                    }]
+                );
+                return;
+            }
+            await addSubject(db, ref_sub, sub_code);
+            setsubject('');
+            setsub_code('');
+            // console.log('Subject added successfully 🤖!');
+        }
+        catch (error) {
+            console.error(error);
+        }
+        finally{
+            setAddVisible(false);
+            fetchSubjects();
+        }
     }
 
     const delete_sub = async (id:number | undefined) => {
@@ -71,17 +101,46 @@ function Main() {
     const edit_sub = async (id: number | undefined) => {
         if(id){
             setMenuVisible(false);
-            setSelectedSubject(null);
-            router.push({pathname:'/(tabs)/admin',params:{id:id,active:'edit'}});
-            console.log('Edit subject');
+            setsubject(selectedSubject?.subName || '');
+            setsub_code(selectedSubject?.subCode || '');
+            setEditVisible(true);
         }
         else{
             console.log('No subject selected');
         }
     }
-
-
-
+    const update_sub = async (id:number | undefined,subName:string,subCode:string) => {
+        if(id)
+        {
+            try{
+                const ref_sub = subName.replace(/\s+/g, ' ').trim();
+                const ref_code = subCode.replace(/\s+/g, ' ').trim();
+                if(ref_sub === '' || ref_code === ''){
+                    Alert.alert('Empty Fields','Subject name or code cannot be empty',
+                        [{text: 'OK', 
+                            // onPress: () => console.log('OK Pressed')
+                        }]
+                    );
+                    return;
+                }
+                await updateSubject(db,id,subName,subCode);
+                console.log('Subject updated successfully 🤖!');
+            }
+            catch (error) {
+                console.error(error);
+            }
+            finally{
+                setEditVisible(false);
+                setsubject('');
+                setsub_code('');
+                fetchSubjects();
+            }
+        }
+        else
+        {
+            throw new Error('No subject selected'); 
+        }
+    }
     return (
         <>
             {/* <StatusBar barStyle="dark-content" backgroundColor="#F5F5F5" /> */}
@@ -120,7 +179,7 @@ function Main() {
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.mod_options}>
-                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#16C47F'}]} onPress={()=>edit_sub(selectedSubject?.id)}>
+                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#16C47F'}]} onPress={()=>{edit_sub(selectedSubject?.id)}}>
                                             <Text style={[styles.text,{fontSize: 13},]}>Edit Subject</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#F93827'}]} onPress={()=>delete_sub(selectedSubject?.id)}>
@@ -133,8 +192,56 @@ function Main() {
                         </TouchableOpacity>
                     ))}
                 </View>
-                <TouchableOpacity style={styles.button} >
+                <TouchableOpacity style={styles.button} onPress={()=>setAddVisible(true)}>
                     <Text style={styles.text}> Add </Text>
+                    <Modal
+                        visible={isAddVisible}
+                        transparent={true}
+                        animationType="none"
+                        onRequestClose={() => setAddVisible(false)}
+                        // style={styles.modal}
+                        >
+                            <View style={[styles.mod_container,{ backgroundColor: "rgba(237, 234, 234, 0.7)",}]}>
+                                <View style={styles.mod_sub_container}>
+                                    <View style={styles.text_input}>
+                                        <TextInput placeholder="Subject Name"  placeholderTextColor="#888" style={styles.input} value={subject} onChangeText={setsubject}/>
+                                        <TextInput placeholder="Subject Code"  placeholderTextColor="#888" style={styles.input} value={sub_code} onChangeText={setsub_code}/>
+                                    </View>
+                                    <View style={styles.mod_options}>
+                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#16C47F'}]} onPress={()=>{setAddVisible(false),setsubject(''),setsub_code('')}}>
+                                            <Text style={[styles.text,{fontSize: 13},]}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#F93827'}]} onPress={()=>add_sub(subject,sub_code)}>
+                                            <Text style={[styles.text,{fontSize: 13},]}>Add Subject</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </Modal>
+                    <Modal
+                        visible={isEditVisible}
+                        transparent={true}
+                        animationType="none"
+                        onRequestClose={() => setEditVisible(false)}
+                        // style={styles.modal}
+                        >
+                            <View style={[styles.mod_container,{ backgroundColor: "rgba(237, 234, 234, 0.7)",}]}>
+                                <View style={styles.mod_sub_container}>
+                                    <View style={styles.text_input}>
+                                        <TextInput placeholder="Subject Name"  placeholderTextColor="#888" style={styles.input} value={subject} onChangeText={setsubject}/>
+                                        <TextInput placeholder="Subject Code"  placeholderTextColor="#888" style={styles.input} value={sub_code} onChangeText={setsub_code}/>
+                                    </View>
+                                    <View style={styles.mod_options}>
+                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#16C47F'}]} onPress={()=>{setEditVisible(false),setsubject(''),setsub_code('')}}>
+                                            <Text style={[styles.text,{fontSize: 13},]}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[styles.mod_option,{backgroundColor:'#F93827'}]} onPress={()=>update_sub(selectedSubject?.id,subject,sub_code)}>
+                                            <Text style={[styles.text,{fontSize: 13},]}>Save</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </Modal>
                 </TouchableOpacity>
             </View>
         </>
@@ -232,14 +339,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        padding: 10,
     },
     mod_sub_container:{
         backgroundColor: '#EEEEEE',
         opacity: 1,
         // height: 100,
         zIndex: 100,
-        // width: '88%',
+        width: '100%',
         borderRadius: 3,
         borderColor: '#1C82AD',
         borderWidth: 1,
@@ -285,9 +392,33 @@ const styles = StyleSheet.create({
     },
     mod_cancel:{
         backgroundColor:'#DDDDDD',
-        width:'15%',
-        height:45,
+        width:'12%',
+        height:40,
         marginTop:0
-    }
+    },
+    text_input:{
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        margin: 5,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: 10,
+        width: '100%',
+    },
+    input:{
+    color: '#4477CE',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    width: '100%',
+    overflow: 'hidden',
+    height: 50,
+    textOverflow: 'ellipsis',
+    fontFamily: 'Roboto-Medium',
+    paddingLeft: 10,
+    fontSize: 17,
+    },
     
 })
