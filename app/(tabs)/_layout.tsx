@@ -88,7 +88,7 @@ export default function TabLayout() {
 
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="ui"
         options={{
           title: 'UI',
@@ -107,7 +107,7 @@ export default function TabLayout() {
             // display:'none',
           }
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="admin"
         options={{

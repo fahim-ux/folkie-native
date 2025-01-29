@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "folkie",
+    "name": "Tracker",
     "slug": "folkie",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,10 +18,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.folkie.folkie"
+      "package": "com.folkie.folkie",
+      "enableHermes": true
     },
     "web": {
       "bundler": "metro",

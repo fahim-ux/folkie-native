@@ -139,17 +139,17 @@ export const insertIntoAttendance = async (
   status: string
 ): Promise<void> => {
   const query = `INSERT INTO AttendanceRecords (subject_id, date, month, year, day, status) VALUES (${subject_id}, '${date}', '${month}', '${year}', '${day}', '${status}');`;
-  const checkQuery = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND date = '${date}' ;`;
+  const checkQuery = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND date = '${date}' AND month=${month};`;
   const check = await getAttendanceRecord(db,checkQuery);
   if(check){
-    console.log('Updating Status');
+    console.log('<Updating Status>');
     const updateQuery = `UPDATE AttendanceRecords SET status = '${status}' WHERE subject_id = ${subject_id} AND date = '${date}';`;
     await db.execAsync(updateQuery);
   }
   else{
     try {
       await db.execAsync(query);
-      console.log('Attendance added successfully');
+      console.log('<Attendance added successfully>');
     } catch (error) {
       console.error('Error adding attendance:', error);
       throw new Error('Failed to add attendance to the database');
@@ -157,23 +157,44 @@ export const insertIntoAttendance = async (
   }  
 };
 
-export const getAllAttendance = async (db: SQLiteDatabase, subject_id: number):Promise<Array<AttendanceRecord>> => {
-  const query = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id};`;
+export const getAllAttendance = async (db: SQLiteDatabase, subject_id: number, month:string):Promise<Array<AttendanceRecord>> => {
+  // const query = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND month=${month};`;
+  // try {
+  //   const Attendance:Array<AttendanceRecord> = await db.getAllAsync(query);
+  //   if (Attendance && Attendance.length > 0) {
+  //     return Attendance.map((row: AttendanceRecord) => ({
+  //       id: row.id,
+  //       subject_id: row.subject_id,
+  //       date: row.date,
+  //       month: row.month,
+  //       year: row.year,
+  //       day: row.day,
+  //       status: row.status
+  //     }));
+  //   }
+  //   console.log('No attendance found.');
+  //   return [];
+  // } catch (error) {
+  //   console.error('Error fetching attendance:', error);
+  //   throw new Error('Failed to fetch attendance from the database');
+  // }
+  const query = 'SELECT * FROM AttendanceRecords WHERE subject_id = ? AND month = ?;';
+  const params = [subject_id, month];
+
   try {
-    const Attendance:Array<AttendanceRecord> = await db.getAllAsync(query);
-    if (Attendance && Attendance.length > 0) {
-      return Attendance.map((row: AttendanceRecord) => ({
-        id: row.id,
-        subject_id: row.subject_id,
-        date: row.date,
-        month: row.month,
-        year: row.year,
-        day: row.day,
-        status: row.status
-      }));
+    const statement = await db.prepareAsync(query);
+    try {
+      const result = await statement.executeAsync<AttendanceRecord>(params);
+      const attendance : Array<AttendanceRecord>= await result.getAllAsync();
+      if (attendance.length > 0) {
+        return attendance;
+      } else {
+        console.log('No attendance found.');
+        return [];
+      }
+    } finally {
+      await statement.finalizeAsync();
     }
-    console.log('No attendance found.');
-    return [];
   } catch (error) {
     console.error('Error fetching attendance:', error);
     throw new Error('Failed to fetch attendance from the database');

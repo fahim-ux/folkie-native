@@ -76,10 +76,10 @@ function Main() {
           {/* <Text style={[styles.text,{backgroundColor: '#3DC2EC',height:60,display:'flex',justifyContent:'center'}]}> Update </Text> */}
           <View style={styles.db_options}>
             <TouchableOpacity style={[styles.button,{backgroundColor:'#F93827'}]} onPress={()=>{del_attendance()}}>
-              <Text style={styles.text}> Delete all Subjects </Text>
+              <Text style={styles.text}> Delete all Attendance </Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button,{backgroundColor:'#F93827'}]} onPress={()=>{del_subjects()}}>
-              <Text style={styles.text}> Delete all Attendance </Text>
+              <Text style={styles.text}> Delete all Subjects </Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button,{backgroundColor:'#2973B2'}]} onPress={()=>{show_tables()}}>
               <Text style={styles.text}> Show Tables </Text>
