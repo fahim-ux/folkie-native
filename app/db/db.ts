@@ -12,11 +12,11 @@ type AttendanceRecord = {
 }
 
 export const connectToDatabase = async (): Promise<SQLiteDatabase> => {
-  console.log('Connecting to database from db.ts');  
+  // console.log('Connecting to database from db.ts');  
   try {
     const db: SQLiteDatabase = await SQLite.openDatabaseAsync('yourProjectName.db');
 
-    console.log('Database opened successfully:', db);
+    // console.log('Database opened successfully:', db);
     return db;
 
   } catch (error) {
@@ -51,15 +51,8 @@ export const createTables = async (db: SQLiteDatabase): Promise<void> => {
   const AttClear = `DELETE FROM AttendanceRecords;`;
 
   try {
-    // console.log('Creating tables...');
     await db.execAsync(SubjectsQuery);
     await db.execAsync(AttendanceQuery);
-    // await db.execAsync(AttClear);
-    // await db.execAsync(deleteAttendanceTable);
-    // const tables = await db.getAllAsync(showTables);
-    // console.log('Tables created successfully 🤖! :: ',tables );
-    // const attendanceTable = await db.getAllAsync(describeAttendance);
-    // console.log('Attendance Table :: ',attendanceTable);
   } catch (error) {
     console.error('Error creating tables:', error);
     throw new Error('Failed to create tables in the database');
@@ -101,7 +94,7 @@ export const getSubjects = async (db: SQLiteDatabase):Promise<Array<{id:number,s
       subCode: row.subCode
     }));
   }
-  console.log('No subjects found.');
+  // console.log('No subjects found.');
   return [];
 }
 
@@ -139,7 +132,7 @@ export const insertIntoAttendance = async (
   status: string
 ): Promise<void> => {
   const query = `INSERT INTO AttendanceRecords (subject_id, date, month, year, day, status) VALUES (${subject_id}, '${date}', '${month}', '${year}', '${day}', '${status}');`;
-  const checkQuery = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND date = '${date}' AND month=${month};`;
+  const checkQuery = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND date = '${date}' AND month='${month}';`;
   const check = await getAttendanceRecord(db,checkQuery);
   if(check){
     console.log('<Updating Status>');
@@ -158,26 +151,6 @@ export const insertIntoAttendance = async (
 };
 
 export const getAllAttendance = async (db: SQLiteDatabase, subject_id: number, month:string):Promise<Array<AttendanceRecord>> => {
-  // const query = `SELECT * FROM AttendanceRecords WHERE subject_id = ${subject_id} AND month=${month};`;
-  // try {
-  //   const Attendance:Array<AttendanceRecord> = await db.getAllAsync(query);
-  //   if (Attendance && Attendance.length > 0) {
-  //     return Attendance.map((row: AttendanceRecord) => ({
-  //       id: row.id,
-  //       subject_id: row.subject_id,
-  //       date: row.date,
-  //       month: row.month,
-  //       year: row.year,
-  //       day: row.day,
-  //       status: row.status
-  //     }));
-  //   }
-  //   console.log('No attendance found.');
-  //   return [];
-  // } catch (error) {
-  //   console.error('Error fetching attendance:', error);
-  //   throw new Error('Failed to fetch attendance from the database');
-  // }
   const query = 'SELECT * FROM AttendanceRecords WHERE subject_id = ? AND month = ?;';
   const params = [subject_id, month];
 
@@ -201,7 +174,36 @@ export const getAllAttendance = async (db: SQLiteDatabase, subject_id: number, m
   }
 }
 
+export const getAttendancebySubject = async (db: SQLiteDatabase, subject_id: number):Promise<Array<AttendanceRecord>> => {
+  const query = `SELECT * FROM AttendanceRecords WHERE subject_id = ?;`;
+  const params = [subject_id];
+
+  try{
+    const statement = await db.prepareAsync(query);
+    try {
+      const result = await statement.executeAsync<AttendanceRecord>(params);
+      const attendance : Array<AttendanceRecord>= await result.getAllAsync();
+      if (attendance.length > 0) {
+        return attendance;
+      } else {
+        console.log('No attendance found.');
+        return [];
+      }
+    } finally{
+      await statement.finalizeAsync();
+    }
+  }
+  catch(error){
+    console.error('Error fetching attendance:', error);
+    throw new Error('Failed to fetch attendance from the database');
+  }
+  
+}
+
+
+
 export const getAttendanceRecord = async (db: SQLiteDatabase, query: string): Promise<boolean> => {
+  console.log('Checking attendance record:', query);
   try {
     const AttendanceRecords: Array<string> = await db.getAllAsync(query);
     if (AttendanceRecords && AttendanceRecords.length > 0) {

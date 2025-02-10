@@ -27,19 +27,19 @@ This project uses [file-based routing](https://docs.expo.dev/router/introduction
 #### UI 
 
 ### Home Screen
-![Home Screen](assets/demo/f.jpg)
+![Home Screen](dump/f.jpg)
 
 ### Explore Screen
-![Profile Screen](assets/demo/s.jpg)
+![Profile Screen](dump/s.jpg)
 
 ### Deals Screen
-![Deals Screen](assets/demo/t.jpg)
+![Deals Screen](dump/t.jpg)
 
 ### Designer Screen
-![Designer Screen](assets/demo/l.jpg)
+![Designer Screen](dump/l.jpg)
 
 ### Sidebar Screen
-![Sidebar Screen](assets/demo/fi.jpg)
+![Sidebar Screen](dump/fi.jpg)
 
 
 

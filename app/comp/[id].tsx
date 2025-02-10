@@ -224,7 +224,7 @@ function Main() {
             <Text style={styles.sub_code}>{subcode}</Text>
           </View>
           <View style={styles.att_per}>
-            <AttendanceCircle percentage={totals.per} size={100} />
+            <AttendanceCircle percentage={totals.per} size={100} display={false}/>
             <Text style={styles.sub_code}>Present : {totals.green}</Text>
             <Text style={styles.sub_code}>Absent : {totals.red}</Text>
           </View>

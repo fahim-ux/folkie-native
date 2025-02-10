@@ -7,7 +7,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { connectToDatabase, createTables } from './db/db';
 import { SQLiteProvider} from 'expo-sqlite';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -18,8 +18,6 @@ export default function RootLayout() {
   const loadFonts = async () => {
     await Font.loadAsync({
       'Roboto-Regular': require('@/assets/fonts/Roboto-Mono/RobotoMono-Regular.ttf'),
-      'Roboto-Bold': require('@/assets/fonts/Roboto-Mono/RobotoMono-Bold.ttf'),
-      'Roboto-Medium': require('@/assets/fonts/Roboto-Mono/RobotoMono-Medium.ttf'),
       'Roboto-Light': require('@/assets/fonts/Roboto-Mono/RobotoMono-Light.ttf')
     });
     setTimeout(() => {
@@ -53,8 +51,6 @@ export default function RootLayout() {
     <SQLiteProvider databaseName="yourProjectName.db">
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-          <Stack.Screen name="details" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="comp/[id]" options={{ headerShown: false }} />
         </Stack>
